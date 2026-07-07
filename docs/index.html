@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>x-unfollow - paced bulk unfollow for X, in your own browser</title>
+    <meta name="description" content="A free, open-source Chrome extension that unfollows accounts on X at a human pace. Hard daily cap, protected handles, no API keys, nothing leaves your browser.">
+    <style>
+        :root {
+            --bg: #ffffff; --fg: #0f1419; --muted: #536471; --line: #e1e8ed;
+            --accent: #0f1419; --accent-fg: #ffffff; --card: #f7f9f9;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #15202b; --fg: #f7f9f9; --muted: #8b98a5; --line: #38444d;
+                --accent: #eff3f4; --accent-fg: #0f1419; --card: #1e2732;
+            }
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; background: var(--bg); color: var(--fg);
+            font: 16px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
+        header.hero { padding: 72px 0 40px; text-align: center; }
+        .hero h1 { font-size: 42px; margin: 0 0 12px; letter-spacing: -1px; }
+        .hero p.tag { font-size: 19px; color: var(--muted); margin: 0 0 28px; }
+        .btn {
+            display: inline-block; padding: 12px 26px; border-radius: 999px;
+            background: var(--accent); color: var(--accent-fg);
+            text-decoration: none; font-weight: 700;
+        }
+        .btn.ghost {
+            background: transparent; color: var(--fg);
+            border: 1px solid var(--line); margin-left: 10px;
+        }
+        h2 { font-size: 22px; margin: 44px 0 14px; }
+        ul.safe { list-style: none; padding: 0; margin: 0; }
+        ul.safe li {
+            padding: 10px 14px; margin-bottom: 8px;
+            background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+        }
+        ol.steps { padding-left: 22px; }
+        ol.steps li { margin-bottom: 10px; }
+        code {
+            background: var(--card); border: 1px solid var(--line);
+            border-radius: 5px; padding: 1px 6px; font-size: 14px;
+        }
+        .disclaimer {
+            margin-top: 44px; padding: 14px 16px; border: 1px solid var(--line);
+            border-radius: 10px; color: var(--muted); font-size: 14px;
+        }
+        footer { margin-top: 40px; color: var(--muted); font-size: 14px; text-align: center; }
+        footer a { color: inherit; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="hero">
+            <h1>x-unfollow</h1>
+            <p class="tag">Bulk-unfollow on X at a human pace, from your own browser. Free and open source. No API keys, no passwords, nothing leaves your machine.</p>
+            <a class="btn" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download ZIP</a>
+            <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub</a>
+        </header>
+
+        <h2>Why it is safe to run</h2>
+        <ul class="safe">
+            <li>Runs entirely inside your own logged-in browser. Your session and cookies never leave your machine.</li>
+            <li>Randomized 20-50 second delay between unfollows, plus a 4-10 minute break every 10.</li>
+            <li>Hard cap of 600 unfollows per day. The counter survives restarts.</li>
+            <li>A protected-handles list it will never unfollow. You edit it in the popup.</li>
+            <li>Unknown popups are dismissed, never confirmed. Only the unfollow confirmation step clicks confirm.</li>
+            <li>Open source and dependency-light. Read every line before you run it.</li>
+        </ul>
+
+        <h2>Install (about 2 minutes)</h2>
+        <ol class="steps">
+            <li><a href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download the ZIP</a> and unzip it anywhere.</li>
+            <li>Open <code>chrome://extensions</code> in Chrome.</li>
+            <li>Turn on <strong>Developer mode</strong> (top right).</li>
+            <li>Click <strong>Load unpacked</strong> and select the <code>extension</code> folder from the unzipped download.</li>
+            <li>Log in to X and open <code>x.com/yourhandle/following</code>.</li>
+            <li>Click the x-unfollow icon, set a session size, press <strong>Start</strong>.</li>
+        </ol>
+
+        <h2>Prefer a terminal?</h2>
+        <p>The same engine ships as a small Node.js CLI in the repo. See the <a href="https://github.com/OxIsrafil/x-unfollow#setup">README</a>.</p>
+
+        <p class="disclaimer">Automating actions on X may violate the X Terms of Service and can lead to rate limits or account restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk. It can only unfollow from your own following list; it cannot post, reply, like, or follow.</p>
+
+        <footer>
+            <a href="https://github.com/OxIsrafil/x-unfollow">GitHub</a> ·
+            <a href="https://github.com/OxIsrafil/x-unfollow/blob/main/LICENSE">MIT License</a>
+        </footer>
+    </div>
+</body>
+</html>

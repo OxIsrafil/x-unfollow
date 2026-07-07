@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <header>
+        <h1>x-unfollow</h1>
+        <span id="today">Today: -/600</span>
+    </header>
+
+    <div id="notice" class="notice" hidden></div>
+
+    <main id="controls">
+        <label for="sessionMax">Session max
+            <input id="sessionMax" type="number" min="1" max="600" placeholder="35">
+        </label>
+        <button id="startBtn" class="primary">Start on this page</button>
+        <button id="stopBtn" hidden>Stop</button>
+        <p id="statusLine" class="status">Idle</p>
+    </main>
+
+    <details id="protect">
+        <summary>Protected handles (<span id="protectCount">0</span>)</summary>
+        <p class="hint">One handle per line, with or without @. These are never unfollowed.</p>
+        <textarea id="protectList" rows="6" spellcheck="false"></textarea>
+        <button id="saveProtect">Save list</button>
+        <span id="protectSaved" class="saved" hidden>Saved</span>
+    </details>
+
+    <footer>
+        <span>20-50s between unfollows, hard cap 600/day</span>
+    </footer>
+
+    <script src="core.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>

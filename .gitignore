@@ -8,3 +8,5 @@ unfollow_protect_handles.txt
 node_modules/
 *.log
 .DS_Store
+.superpowers/
+plans/

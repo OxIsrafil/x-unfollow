@@ -5,7 +5,8 @@
   "type": "module",
   "engines": { "node": ">=22.14.0" },
   "scripts": {
-    "start": "node unfollow.js"
+    "start": "node unfollow.js",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "playwright": "^1.54.1",

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "x-unfollow",
+  "version": "1.0.0",
+  "description": "Paced bulk unfollow for X. Hard daily cap, protected handles, runs only inside your own browser.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://x.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*"],
+      "js": ["core.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "x-unfollow"
+  }
+}
