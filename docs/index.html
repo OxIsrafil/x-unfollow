@@ -202,9 +202,12 @@
         footer { border-top: 1px solid var(--line); padding: 42px 0; }
         footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
         footer p { margin: 0; color: var(--faint); font-size: 0.9rem; max-width: 58ch; line-height: 1.5; }
-        footer .flinks { display: flex; gap: 20px; }
+        footer .flinks { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
         footer .flinks a { color: var(--muted); font-size: 0.9rem; }
         footer .flinks a:hover { color: var(--fg); }
+        footer .credit { color: var(--faint); font-size: 0.9rem; }
+        footer .credit a { color: var(--accent); font-weight: 600; }
+        footer .credit a:hover { text-decoration: underline; }
 
         /* reveal: fade-ups for content, masked slide-up for headings */
         .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.2,0.7,0.2,1), transform 0.8s cubic-bezier(0.2,0.7,0.2,1); }
@@ -376,6 +379,7 @@
         <div class="wrap">
             <p>Automating X may violate its Terms of Service and can lead to rate limits or restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk.</p>
             <div class="flinks">
+                <span class="credit">Built by <a href="https://x.com/israfill" target="_blank" rel="noopener">@israfill</a></span>
                 <a href="https://github.com/OxIsrafil/x-unfollow">GitHub</a>
                 <a href="https://github.com/OxIsrafil/x-unfollow/blob/main/LICENSE">MIT License</a>
             </div>
