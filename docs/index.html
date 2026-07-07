@@ -101,9 +101,11 @@
         .eyebrow { display: inline-block; color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 22px; }
         h1 { font-size: clamp(3rem, 9.5vw, 6rem); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; margin: 0 0 24px; }
         h1 .grey { color: var(--faint); }
-        .word { display: inline-block; overflow: hidden; vertical-align: top; }
+        h1 .small { font-size: 0.52em; letter-spacing: -0.02em; }
+        .word { display: inline-block; overflow: hidden; vertical-align: bottom; }
         .word > span { display: inline-block; transform: translateY(110%); transition: transform 0.9s cubic-bezier(0.16,1,0.3,1); }
         .hero.play .word > span { transform: translateY(0); }
+        .hero.play .word.small > span { transition-delay: 0.14s; }
         .lede { max-width: 32ch; margin: 0 auto 40px; font-size: clamp(1.2rem, 2.4vw, 1.55rem); line-height: 1.42; color: var(--muted); }
         .cta { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
         .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 32px; border-radius: 980px; font-size: 1.08rem; font-weight: 500; border: 1px solid transparent; cursor: pointer; transition: background 0.22s, color 0.22s, transform 0.12s, border-color 0.22s, box-shadow 0.22s; }
@@ -117,8 +119,8 @@
         .hero .cta, .hero .eyebrow, .hero .lede { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .hero.play .cta, .hero.play .eyebrow, .hero.play .lede { opacity: 1; transform: none; }
         .hero.play .eyebrow { transition-delay: 0.05s; }
-        .hero.play .lede { transition-delay: 0.5s; }
-        .hero.play .cta { transition-delay: 0.62s; }
+        .hero.play .lede { transition-delay: 0.55s; }
+        .hero.play .cta { transition-delay: 0.68s; }
         .subnote { margin-top: 18px; color: var(--faint); font-size: 0.92rem; }
 
         /* demo */
@@ -152,7 +154,7 @@
         .steps { background: var(--bg2); padding: clamp(72px, 12vh, 128px) 0; }
         .steps h2 { text-align: center; font-size: clamp(1.9rem, 4.6vw, 3rem); font-weight: 600; letter-spacing: -0.03em; margin: 0 0 clamp(40px, 6vh, 60px); }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .step { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 32px 28px; box-shadow: var(--shadow); transition: transform 0.3s cubic-bezier(0.2,0.7,0.2,1), box-shadow 0.3s; }
+        .step { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 32px 28px; box-shadow: var(--shadow); transition: transform 0.3s cubic-bezier(0.2,0.7,0.2,1), box-shadow 0.3s, opacity 0.8s cubic-bezier(0.2,0.7,0.2,1); }
         .step:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
         .step .n { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 600; font-size: 1.05rem; margin-bottom: 18px; }
         .step h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
@@ -179,9 +181,12 @@
         footer .flinks a { color: var(--muted); font-size: 0.9rem; }
         footer .flinks a:hover { color: var(--fg); }
 
-        /* reveal */
+        /* reveal: fade-ups for content, masked slide-up for headings */
         .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.2,0.7,0.2,1), transform 0.8s cubic-bezier(0.2,0.7,0.2,1); }
         .reveal.in { opacity: 1; transform: none; }
+        .mh { display: block; overflow: hidden; padding-bottom: 0.08em; }
+        .mh > span { display: block; transform: translateY(115%); transition: transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+        .mh.in > span { transform: translateY(0); }
 
         @media (max-width: 720px) {
             .grid { grid-template-columns: 1fr; }
@@ -190,7 +195,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
-            .reveal, .word > span, .hero .cta, .hero .eyebrow, .hero .lede { opacity: 1 !important; transform: none !important; transition: none !important; }
+            .reveal, .word > span, .mh > span, .hero .cta, .hero .eyebrow, .hero .lede { opacity: 1 !important; transform: none !important; transition: none !important; }
             .blob { animation: none !important; }
             .row { transition: none !important; }
             .btn, .step, .bmc { transition: none !important; }
@@ -217,7 +222,7 @@
         <div class="aurora"><span class="blob a"></span><span class="blob b"></span></div>
         <div class="wrap">
             <span class="eyebrow">Free &amp; open source</span>
-            <h1><span class="word"><span>Unfollow,</span></span><br><span class="word grey"><span>quietly.</span></span></h1>
+            <h1><span class="word"><span>Unfollow</span></span> <span class="word small grey"><span>quietly</span></span></h1>
             <p class="lede">Bulk-unfollow on X at a human pace, right inside your own browser. No API keys, no passwords, nothing leaves your machine.</p>
             <div class="cta">
                 <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
@@ -229,7 +234,7 @@
 
     <section class="demo">
         <div class="wrap">
-            <h2 class="reveal">Watch it work.</h2>
+            <h2><span class="mh"><span>Watch it work.</span></span></h2>
             <p class="cap reveal">Paced, deliberate, and always under your control. This is roughly what a run looks like.</p>
             <div class="panel reveal" id="demo" aria-hidden="true">
                 <div class="phead">
@@ -243,27 +248,27 @@
 
     <section class="statements wrap">
         <div class="stmt reveal">
-            <h2>Paced like a human.</h2>
+            <h2><span class="mh"><span>Paced like a human.</span></span></h2>
             <p>20 to 50 seconds between each unfollow, with a longer rest every ten. X never sees a burst.</p>
         </div>
         <div class="stmt reveal">
             <span class="big" id="cap600">600</span>
-            <h2>A ceiling you can trust.</h2>
+            <h2><span class="mh"><span>A ceiling you can trust.</span></span></h2>
             <p>Never more than 600 a day. The count remembers itself, even after you close the tab.</p>
         </div>
         <div class="stmt reveal">
-            <h2>Some accounts stay.</h2>
+            <h2><span class="mh"><span>Some accounts stay.</span></span></h2>
             <p>Keep a protected list of handles. Those are never touched, no matter how large the run.</p>
         </div>
         <div class="stmt reveal">
-            <h2>It never leaves your browser.</h2>
+            <h2><span class="mh"><span>It never leaves your browser.</span></span></h2>
             <p>Everything runs in your own logged-in session. It cannot post, reply, like, or follow.</p>
         </div>
     </section>
 
     <section class="steps">
         <div class="wrap">
-            <h2 class="reveal">Running in three steps.</h2>
+            <h2><span class="mh"><span>Running in three steps.</span></span></h2>
             <div class="grid">
                 <div class="step reveal">
                     <span class="n">1</span>
@@ -286,7 +291,7 @@
 
     <section class="support" id="support">
         <div class="wrap">
-            <h2 class="reveal">Free forever.</h2>
+            <h2><span class="mh"><span>Free forever.</span></span></h2>
             <p class="reveal">No paywall, no account, no catch. If it cleaned up your feed and saved you an afternoon, you can leave a tip.</p>
             <a class="bmc reveal" href="https://www.buymeacoffee.com/israfill" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z" stroke="#0d0c22" stroke-width="1.8"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17" stroke="#0d0c22" stroke-width="1.8"/><path d="M7 3.5c0 1-1 1.5-1 2.5M11 3.5c0 1-1 1.5-1 2.5" stroke="#0d0c22" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -297,7 +302,7 @@
     </section>
 
     <section class="closing wrap">
-        <h2 class="reveal">Clean up your following.</h2>
+        <h2><span class="mh"><span>Clean up your following.</span></span></h2>
         <div class="cta reveal">
             <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
             <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
@@ -330,8 +335,9 @@
         // hero entrance
         requestAnimationFrame(function () { document.querySelector('.hero').classList.add('play'); });
 
-        // reveals
-        var els = [].slice.call(document.querySelectorAll('.reveal'));
+        // reveals (fade-ups for content + masked slide-up for headings)
+        [].forEach.call(document.querySelectorAll('.grid .step'), function (el, i) { el.style.transitionDelay = (i * 0.09) + 's'; });
+        var els = [].slice.call(document.querySelectorAll('.reveal, .mh'));
         if (reduce || !('IntersectionObserver' in window)) {
             els.forEach(function (el) { el.classList.add('in'); });
         } else {
