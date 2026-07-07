@@ -106,7 +106,7 @@
         @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-50px,30px) scale(1.1); } }
         .hero .wrap { position: relative; z-index: 1; }
 
-        .eyebrow { display: inline-block; color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 22px; }
+        .eyebrow { display: inline-block; color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-top: 14px; }
         h1 { font-size: clamp(3rem, 9.5vw, 6rem); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; margin: 0 0 24px; }
         h1 .grey { color: var(--faint); }
         h1 .small { font-size: 0.52em; letter-spacing: -0.02em; }
@@ -126,7 +126,7 @@
         .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
         .hero .cta, .hero .eyebrow, .hero .lede { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .hero.play .cta, .hero.play .eyebrow, .hero.play .lede { opacity: 1; transform: none; }
-        .hero.play .eyebrow { transition-delay: 0.05s; }
+        .hero.play .eyebrow { transition-delay: 0.78s; }
         .hero.play .lede { transition-delay: 0.55s; }
         .hero.play .cta { transition-delay: 0.68s; }
         .subnote { margin-top: 18px; color: var(--faint); font-size: 0.92rem; }
@@ -251,7 +251,6 @@
     <header class="hero">
         <div class="aurora"><span class="blob a"></span><span class="blob b"></span></div>
         <div class="wrap">
-            <span class="eyebrow">Free &amp; open source</span>
             <h1><span class="word"><span>Unfollow</span></span> <span class="word small grey"><span>quietly</span></span></h1>
             <p class="lede">Bulk-unfollow on X at a human pace, right inside your own browser. No API keys, no passwords, nothing leaves your machine.</p>
             <div class="cta">
@@ -259,6 +258,7 @@
                 <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
             </div>
             <p class="subnote">Loads unpacked in Chrome in about two minutes.</p>
+            <span class="eyebrow">Free &amp; open source</span>
         </div>
     </header>
 
