@@ -1,0 +1,6 @@
+# Copy this file to unfollow_protect_handles.txt and list handles the tool
+# must never unfollow. One handle per line, with or without @.
+# Anything after a # on a line is ignored.
+
+@myBestFriend
+importantAccount   # comments like this are fine too

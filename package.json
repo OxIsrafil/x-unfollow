@@ -1,0 +1,19 @@
+{
+  "name": "x-unfollow",
+  "version": "1.0.0",
+  "description": "Paced bulk unfollow tool for X (x.com) with a hard daily cap, protected-handles list, and a visible browser you control",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node unfollow.js"
+  },
+  "dependencies": {
+    "playwright": "^1.54.1",
+    "playwright-ghost": "^0.15.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OxIsrafil/x-unfollow.git"
+  },
+  "license": "MIT"
+}

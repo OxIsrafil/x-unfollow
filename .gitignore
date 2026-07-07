@@ -1,0 +1,10 @@
+# Never commit your X session - it grants full access to your account
+auth.json
+
+# Local state and personal data
+unfollow_daily_state.json
+unfollow_protect_handles.txt
+
+node_modules/
+*.log
+.DS_Store
