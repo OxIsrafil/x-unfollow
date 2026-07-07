@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://oxisrafil.github.io/x-unfollow">
+    <img src="assets/hero.png" alt="x-unfollow - bulk-unfollow on X, quietly" width="100%">
+  </a>
+</p>
+
 # x-unfollow
 
 Bulk-unfollow accounts on X (x.com) from your own following list, at a human pace. Use it as a browser extension (easiest) or a small CLI tool. Either way you can watch it work and stop it at any time.
