@@ -35,6 +35,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 details { border-top: 1px solid #e1e8ed; padding: 8px 12px; }
 summary { cursor: pointer; font-weight: 600; }
 .hint { color: #536471; margin: 6px 0; }
+.hint.note { font-size: 11px; margin-top: 8px; }
 textarea { width: 100%; box-sizing: border-box; border: 1px solid #cfd9de; border-radius: 6px; padding: 6px; font: 12px/1.4 monospace; }
 .saved { color: #00701a; font-size: 12px; }
 footer { padding: 8px 12px; border-top: 1px solid #e1e8ed; color: #536471; font-size: 11px; }

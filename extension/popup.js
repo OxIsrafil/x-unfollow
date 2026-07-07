@@ -84,11 +84,18 @@ el('stopBtn').addEventListener('click', async () => {
     }
 });
 
-el('saveProtect').addEventListener('click', async () => {
-    await chrome.storage.local.set({ protectList: el('protectList').value });
+// Autosave the protected list as you type (debounced), so nothing is lost if
+// you close the popup. It lives in chrome.storage.local and stays until you
+// edit it here - closing the popup, or Chrome, never clears it.
+let protectSaveTimer = null;
+el('protectList').addEventListener('input', () => {
     el('protectCount').textContent = XUnfollowCore.parseProtectList(el('protectList').value).size;
-    el('protectSaved').hidden = false;
-    setTimeout(() => { el('protectSaved').hidden = true; }, 1500);
+    el('protectSaved').hidden = true;
+    clearTimeout(protectSaveTimer);
+    protectSaveTimer = setTimeout(async () => {
+        await chrome.storage.local.set({ protectList: el('protectList').value });
+        el('protectSaved').hidden = false;
+    }, 400);
 });
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
