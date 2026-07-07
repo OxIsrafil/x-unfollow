@@ -6,6 +6,12 @@
 
 # x-unfollow
 
+<p align="center">
+  <a href="https://x.com/israfill"><img src="https://img.shields.io/badge/Follow%20%40israfill%20on%20X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow @israfill on X"></a>
+  <a href="https://github.com/OxIsrafil/x-unfollow/stargazers"><img src="https://img.shields.io/github/stars/OxIsrafil/x-unfollow?style=for-the-badge&color=0071e3&logo=github&logoColor=white" alt="GitHub stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-0071e3?style=for-the-badge" alt="MIT License"></a>
+</p>
+
 Bulk-unfollow accounts on X (x.com) from your own following list, at a human pace. Use it as a browser extension (easiest) or a small CLI tool. Either way you can watch it work and stop it at any time.
 
 No API keys. No passwords stored. Nothing leaves your machine.
@@ -70,6 +76,10 @@ One handle per line, with or without @.
 - **Never share `auth.json`.** It contains your X session cookies and grants access to your account. It is gitignored by default.
 - Automating actions on X may violate the [X Terms of Service](https://x.com/en/tos) and can lead to rate limits or account restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk.
 - This tool only unfollows from your own following list. It cannot post, reply, like, or follow.
+
+## Author
+
+Built by [@israfill](https://x.com/israfill). If x-unfollow saved you an afternoon, a follow on X means a lot and helps more people find it.
 
 ## License
 
