@@ -75,23 +75,26 @@
         /* nav (floating, apple-style) */
         nav {
             position: fixed; top: 14px; left: 0; right: 0; margin: 0 auto;
-            width: calc(100% - 32px); max-width: 980px; z-index: 100;
+            width: calc(100% - 32px); max-width: 940px; z-index: 100;
             background: var(--nav);
-            -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px);
             border: 1px solid var(--line); border-radius: 999px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.07);
-            transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.4s cubic-bezier(0.2,0.7,0.2,1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.09), inset 0 1px 0 rgba(255,255,255,0.5);
+            transition: max-width 0.55s cubic-bezier(0.2,0.7,0.2,1), box-shadow 0.35s ease, background 0.35s ease;
         }
-        nav.scrolled { box-shadow: 0 12px 36px rgba(0,0,0,0.14); }
-        nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 54px; max-width: none; margin: 0; padding: 0 10px 0 24px; }
+        nav.scrolled { max-width: 660px; box-shadow: 0 16px 44px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6); }
+        nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 54px; max-width: none; margin: 0; padding: 0 8px 0 20px; gap: 10px; }
         .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--fg); }
-        .brand svg { width: 26px; height: 26px; border-radius: 7px; display: block; }
+        .brand svg { width: 27px; height: 27px; border-radius: 7px; display: block; transition: transform 0.35s cubic-bezier(0.2,0.7,0.2,1); }
+        .brand:hover svg { transform: rotate(-8deg) scale(1.06); }
         .brand .d { color: var(--accent); }
-        .navlinks { display: flex; align-items: center; gap: 22px; }
-        .navlink { color: var(--muted); font-size: 0.95rem; }
-        .navlink:hover { color: var(--fg); }
-        .navcta { color: var(--fg); border: 1px solid var(--line); padding: 7px 16px; border-radius: 980px; transition: background 0.2s, border-color 0.2s; }
-        .navcta:hover { background: var(--bg2); }
+        .navlinks { display: flex; align-items: center; gap: 4px; }
+        .navlink { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.95rem; font-weight: 500; padding: 8px 13px; border-radius: 999px; transition: background 0.2s ease, color 0.2s ease; }
+        .navlink svg { width: 18px; height: 18px; }
+        .navlink:hover { color: var(--fg); background: var(--pill); }
+        .navcta { display: inline-flex; align-items: center; color: #fff; background: var(--accent); border: none; padding: 9px 18px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; margin-left: 4px; box-shadow: 0 4px 14px rgba(0,113,227,0.32); transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; }
+        .navcta:hover { background: var(--accent-press); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,113,227,0.42); }
+        .navcta:active { transform: translateY(0) scale(0.97); }
 
         /* hero */
         .hero { position: relative; text-align: center; padding: clamp(76px, 15vh, 168px) 0 clamp(48px, 8vh, 96px); overflow: hidden; }
@@ -212,14 +215,18 @@
         @media (max-width: 720px) {
             .grid { grid-template-columns: 1fr; }
             footer .wrap { flex-direction: column; align-items: flex-start; }
-            .navlinks { gap: 14px; }
+        }
+        @media (max-width: 560px) {
+            nav .wrap { padding: 0 8px 0 16px; }
+            .navlink.support-link { display: none; }
+            .navlink.gh span { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
             .reveal, .word > span, .mh > span, .hero .cta, .hero .eyebrow, .hero .lede { opacity: 1 !important; transform: none !important; transition: none !important; }
             .blob { animation: none !important; }
             .row { transition: none !important; }
-            .btn, .step, .bmc, .chev { transition: none !important; }
+            .btn, .step, .bmc, .chev, .brand svg, nav { transition: none !important; }
             .qa[open] .ans { animation: none !important; }
         }
     </style>
@@ -234,8 +241,9 @@
                 x<span class="d">-</span>unfollow
             </span>
             <div class="navlinks">
-                <a class="navlink" href="https://github.com/OxIsrafil/x-unfollow">GitHub</a>
-                <a class="navcta" href="#support">Support</a>
+                <a class="navlink gh" href="https://github.com/OxIsrafil/x-unfollow" aria-label="View on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg><span>GitHub</span></a>
+                <a class="navlink support-link" href="#support">Support</a>
+                <a class="navcta" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
             </div>
         </div>
     </nav>
