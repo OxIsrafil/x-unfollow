@@ -15,7 +15,7 @@ No API keys. No passwords stored. Nothing leaves your machine.
 
 ## Setup
 
-Requires Node.js 20 or newer.
+Requires Node.js 22.14 or newer.
 
 ```bash
 git clone https://github.com/OxIsrafil/x-unfollow.git

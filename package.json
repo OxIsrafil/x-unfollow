@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Paced bulk unfollow tool for X (x.com) with a hard daily cap, protected-handles list, and a visible browser you control",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22.14.0" },
   "scripts": {
     "start": "node unfollow.js"
   },
