@@ -54,7 +54,7 @@
         }
 
         * { box-sizing: border-box; }
-        html { font-size: 18px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+        html { font-size: 18px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 92px; }
         body {
             margin: 0; background: var(--bg); color: var(--fg);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -72,13 +72,18 @@
             z-index: 200; transition: width 0.08s linear;
         }
 
-        /* nav */
+        /* nav (floating, apple-style) */
         nav {
-            position: sticky; top: 0; z-index: 100; background: var(--nav);
+            position: fixed; top: 14px; left: 0; right: 0; margin: 0 auto;
+            width: calc(100% - 32px); max-width: 980px; z-index: 100;
+            background: var(--nav);
             -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid var(--line);
+            border: 1px solid var(--line); border-radius: 999px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+            transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.4s cubic-bezier(0.2,0.7,0.2,1);
         }
-        nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+        nav.scrolled { box-shadow: 0 12px 36px rgba(0,0,0,0.14); }
+        nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 54px; max-width: none; margin: 0; padding: 0 10px 0 24px; }
         .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--fg); }
         .brand svg { width: 26px; height: 26px; border-radius: 7px; display: block; }
         .brand .d { color: var(--accent); }
@@ -161,6 +166,22 @@
         .step p { font-size: 1.05rem; color: var(--muted); margin: 0; line-height: 1.5; }
         .step code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.9em; background: var(--bg2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
 
+        /* faq */
+        .faq { padding: clamp(72px, 12vh, 128px) 0; }
+        .faq h2 { text-align: center; font-size: clamp(1.9rem, 4.6vw, 3rem); font-weight: 600; letter-spacing: -0.03em; margin: 0 0 clamp(36px, 5vh, 52px); }
+        .qalist { max-width: 760px; margin: 0 auto; }
+        .qa { border-bottom: 1px solid var(--line); }
+        .qa:first-child { border-top: 1px solid var(--line); }
+        .qa summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px 6px; font-size: 1.18rem; font-weight: 600; letter-spacing: -0.01em; }
+        .qa summary::-webkit-details-marker { display: none; }
+        .qa summary::marker { content: ""; }
+        .qa summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+        .qa .chev { flex: 0 0 auto; width: 20px; height: 20px; color: var(--muted); transition: transform 0.3s ease; }
+        .qa[open] .chev { transform: rotate(180deg); }
+        .qa .ans { margin: 0; padding: 0 6px 26px; color: var(--muted); font-size: 1.05rem; line-height: 1.6; max-width: 64ch; }
+        .qa[open] .ans { animation: faqIn 0.4s ease; }
+        @keyframes faqIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
         /* support */
         .support { text-align: center; padding: clamp(80px, 13vh, 140px) 0; }
         .support h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 600; letter-spacing: -0.03em; margin: 0 0 16px; }
@@ -198,7 +219,8 @@
             .reveal, .word > span, .mh > span, .hero .cta, .hero .eyebrow, .hero .lede { opacity: 1 !important; transform: none !important; transition: none !important; }
             .blob { animation: none !important; }
             .row { transition: none !important; }
-            .btn, .step, .bmc { transition: none !important; }
+            .btn, .step, .bmc, .chev { transition: none !important; }
+            .qa[open] .ans { animation: none !important; }
         }
     </style>
 </head>
@@ -289,6 +311,38 @@
         </div>
     </section>
 
+    <section class="faq">
+        <div class="wrap">
+            <h2><span class="mh"><span>Questions &amp; answers.</span></span></h2>
+            <div class="qalist">
+                <details class="qa reveal">
+                    <summary>Will this get my account banned?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">Automating X can violate its Terms of Service, so there is always some risk. x-unfollow is deliberately slow - 20 to 50 seconds between each unfollow, with a longer break every ten - to stay well under the radar, but no tool can promise safety. Go at a modest pace and use it at your own risk.</p>
+                </details>
+                <details class="qa reveal">
+                    <summary>Does it need my password or an API key?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">No. It runs inside your own logged-in browser session. There is no login form, no API key, and nothing is ever sent to a server - everything happens on your machine.</p>
+                </details>
+                <details class="qa reveal">
+                    <summary>How fast does it go, and is there a limit?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">It paces itself at 20 to 50 seconds per unfollow, with a longer rest every ten, and stops at a hard ceiling of 600 a day. The daily count is remembered even if you close the tab.</p>
+                </details>
+                <details class="qa reveal">
+                    <summary>Can I keep accounts I do not want to lose?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">Yes. Add any handles to the protected list in the popup and they are skipped every time, no matter how large the run.</p>
+                </details>
+                <details class="qa reveal">
+                    <summary>Can I close the popup or switch tabs?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">You can close the popup - the engine runs in the page and keeps going. Keep the tab open, though. If you switch to another tab, Chrome slows the timers down (never up), so it simply runs a little slower.</p>
+                </details>
+                <details class="qa reveal">
+                    <summary>Is it really free, and which browsers work?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+                    <p class="ans">Completely free and open source under the MIT license - no account, no upsell. It works in any Chromium browser (Chrome, Brave, Edge) loaded through Developer mode.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
     <section class="support" id="support">
         <div class="wrap">
             <h2><span class="mh"><span>Free forever.</span></span></h2>
@@ -323,12 +377,14 @@
     (function () {
         var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // scroll progress
+        // scroll progress + floating nav state
         var prog = document.getElementById('progress');
+        var navEl = document.querySelector('nav');
         function onScroll() {
             var h = document.documentElement;
             var max = h.scrollHeight - h.clientHeight;
             prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+            if (navEl) navEl.classList.toggle('scrolled', h.scrollTop > 8);
         }
         addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
@@ -337,6 +393,7 @@
 
         // reveals (fade-ups for content + masked slide-up for headings)
         [].forEach.call(document.querySelectorAll('.grid .step'), function (el, i) { el.style.transitionDelay = (i * 0.09) + 's'; });
+        [].forEach.call(document.querySelectorAll('.qalist .qa'), function (el, i) { el.style.transitionDelay = (i * 0.05) + 's'; });
         var els = [].slice.call(document.querySelectorAll('.reveal, .mh'));
         if (reduce || !('IntersectionObserver' in window)) {
             els.forEach(function (el) { el.classList.add('in'); });
