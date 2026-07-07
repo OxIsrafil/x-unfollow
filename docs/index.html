@@ -3,95 +3,272 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>x-unfollow - paced bulk unfollow for X, in your own browser</title>
-    <meta name="description" content="A free, open-source Chrome extension that unfollows accounts on X at a human pace. Hard daily cap, protected handles, no API keys, nothing leaves your browser.">
+    <title>x-unfollow - unfollow on X, quietly</title>
+    <meta name="description" content="A free, open-source Chrome extension that bulk-unfollows on X at a human pace. Hard daily cap, protected handles, no API keys, nothing leaves your browser.">
     <style>
         :root {
-            --bg: #ffffff; --fg: #0f1419; --muted: #536471; --line: #e1e8ed;
-            --accent: #0f1419; --accent-fg: #ffffff; --card: #f7f9f9;
+            --bg: #ffffff;
+            --bg2: #f5f5f7;
+            --fg: #1d1d1f;
+            --muted: #6e6e73;
+            --faint: #86868b;
+            --accent: #0071e3;
+            --accent-press: #0060c4;
+            --line: #d2d2d7;
+            --card: #ffffff;
+            --shadow: 0 4px 24px rgba(0,0,0,0.06);
+            --nav: rgba(255,255,255,0.72);
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg: #15202b; --fg: #f7f9f9; --muted: #8b98a5; --line: #38444d;
-                --accent: #eff3f4; --accent-fg: #0f1419; --card: #1e2732;
+                --bg: #000000;
+                --bg2: #0b0b0d;
+                --fg: #f5f5f7;
+                --muted: #a1a1a6;
+                --faint: #86868b;
+                --accent: #2997ff;
+                --accent-press: #5aacff;
+                --line: #2a2a2c;
+                --card: #101012;
+                --shadow: 0 4px 30px rgba(0,0,0,0.5);
+                --nav: rgba(0,0,0,0.66);
             }
         }
         * { box-sizing: border-box; }
+        html { font-size: 18px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
         body {
-            margin: 0; background: var(--bg); color: var(--fg);
-            font: 16px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
         }
-        .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
-        header.hero { padding: 72px 0 40px; text-align: center; }
-        .hero h1 { font-size: 42px; margin: 0 0 12px; letter-spacing: -1px; }
-        .hero p.tag { font-size: 19px; color: var(--muted); margin: 0 0 28px; }
+        a { color: var(--accent); text-decoration: none; }
+        ::selection { background: rgba(0,113,227,0.18); }
+
+        .wrap { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+
+        /* nav */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--nav);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--line);
+        }
+        nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 54px; }
+        .brand { font-weight: 600; font-size: 1.02rem; letter-spacing: -0.02em; color: var(--fg); }
+        .brand .dot { color: var(--accent); }
+        .navlink { color: var(--muted); font-size: 0.95rem; }
+        .navlink:hover { color: var(--fg); }
+
+        /* hero */
+        .hero { text-align: center; padding: clamp(72px, 15vh, 160px) 0 clamp(56px, 9vh, 110px); }
+        .eyebrow {
+            display: inline-block; color: var(--accent); font-weight: 600;
+            font-size: 0.95rem; letter-spacing: 0.01em; margin-bottom: 20px;
+        }
+        h1 {
+            font-size: clamp(2.9rem, 9vw, 5.6rem);
+            line-height: 1.04; font-weight: 600; letter-spacing: -0.035em;
+            margin: 0 0 22px;
+        }
+        h1 .grey { color: var(--faint); }
+        .lede {
+            max-width: 30ch; margin: 0 auto 40px;
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            line-height: 1.4; color: var(--muted); font-weight: 400;
+        }
+        .cta { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
         .btn {
-            display: inline-block; padding: 12px 26px; border-radius: 999px;
-            background: var(--accent); color: var(--accent-fg);
-            text-decoration: none; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px;
+            min-height: 50px; padding: 0 30px;
+            border-radius: 980px; font-size: 1.06rem; font-weight: 500;
+            border: 1px solid transparent; cursor: pointer;
+            transition: background 0.22s ease, color 0.22s ease, transform 0.12s ease, border-color 0.22s ease;
         }
-        .btn.ghost {
-            background: transparent; color: var(--fg);
-            border: 1px solid var(--line); margin-left: 10px;
+        .btn.primary { background: var(--accent); color: #fff; }
+        .btn.primary:hover { background: var(--accent-press); }
+        .btn.primary:active { transform: scale(0.97); }
+        .btn.ghost { color: var(--accent); }
+        .btn.ghost:hover { color: var(--accent-press); }
+        .btn.ghost .arw { transition: transform 0.22s ease; }
+        .btn.ghost:hover .arw { transform: translateX(3px); }
+        .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+        .subnote { margin-top: 18px; color: var(--faint); font-size: 0.92rem; }
+
+        /* statements */
+        .statements { padding: clamp(40px, 6vh, 80px) 0; }
+        .stmt { text-align: center; padding: clamp(56px, 11vh, 128px) 0; border-top: 1px solid var(--line); }
+        .stmt:first-child { border-top: none; }
+        .stmt h2 {
+            font-size: clamp(2rem, 5.4vw, 3.5rem); line-height: 1.08;
+            font-weight: 600; letter-spacing: -0.03em; margin: 0 auto 18px; max-width: 16ch;
         }
-        h2 { font-size: 22px; margin: 44px 0 14px; }
-        ul.safe { list-style: none; padding: 0; margin: 0; }
-        ul.safe li {
-            padding: 10px 14px; margin-bottom: 8px;
-            background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+        .stmt p {
+            font-size: clamp(1.12rem, 2.3vw, 1.42rem); line-height: 1.45;
+            color: var(--muted); margin: 0 auto; max-width: 32ch;
         }
-        ol.steps { padding-left: 22px; }
-        ol.steps li { margin-bottom: 10px; }
-        code {
-            background: var(--card); border: 1px solid var(--line);
-            border-radius: 5px; padding: 1px 6px; font-size: 14px;
+        .stmt .big {
+            display: block; font-size: clamp(3.4rem, 11vw, 6rem); font-weight: 600;
+            letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px;
+            background: linear-gradient(180deg, var(--fg), var(--muted));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
         }
-        .disclaimer {
-            margin-top: 44px; padding: 14px 16px; border: 1px solid var(--line);
-            border-radius: 10px; color: var(--muted); font-size: 14px;
+
+        /* steps */
+        .steps { background: var(--bg2); padding: clamp(72px, 12vh, 130px) 0; }
+        .steps h2 {
+            text-align: center; font-size: clamp(1.9rem, 4.6vw, 3rem);
+            font-weight: 600; letter-spacing: -0.03em; margin: 0 0 clamp(40px, 6vh, 64px);
         }
-        footer { margin-top: 40px; color: var(--muted); font-size: 14px; text-align: center; }
-        footer a { color: inherit; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .step {
+            background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+            padding: 32px 28px; box-shadow: var(--shadow);
+        }
+        .step .n {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--accent); color: #fff; font-weight: 600; font-size: 1.05rem; margin-bottom: 18px;
+        }
+        .step h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+        .step p { font-size: 1.05rem; color: var(--muted); margin: 0; line-height: 1.5; }
+        .step code {
+            font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.9em; background: var(--bg2); border: 1px solid var(--line);
+            border-radius: 6px; padding: 1px 6px;
+        }
+
+        /* closing */
+        .closing { text-align: center; padding: clamp(80px, 14vh, 150px) 0; }
+        .closing h2 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 600; letter-spacing: -0.03em; margin: 0 0 30px; }
+
+        footer { border-top: 1px solid var(--line); padding: 40px 0; }
+        footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+        footer p { margin: 0; color: var(--faint); font-size: 0.9rem; max-width: 58ch; line-height: 1.5; }
+        footer .flinks { display: flex; gap: 20px; }
+        footer .flinks a { color: var(--muted); font-size: 0.9rem; }
+        footer .flinks a:hover { color: var(--fg); }
+
+        /* motion */
+        .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.8s cubic-bezier(0.2,0.7,0.2,1), transform 0.8s cubic-bezier(0.2,0.7,0.2,1); }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (max-width: 720px) {
+            .grid { grid-template-columns: 1fr; }
+            footer .wrap { flex-direction: column; align-items: flex-start; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .btn, .btn.ghost .arw { transition: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="wrap">
-        <header class="hero">
-            <h1>x-unfollow</h1>
-            <p class="tag">Bulk-unfollow on X at a human pace, from your own browser. Free and open source. No API keys, no passwords, nothing leaves your machine.</p>
-            <a class="btn" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download ZIP</a>
-            <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub</a>
-        </header>
+    <nav>
+        <div class="wrap">
+            <span class="brand">x<span class="dot">-</span>unfollow</span>
+            <a class="navlink" href="https://github.com/OxIsrafil/x-unfollow">GitHub</a>
+        </div>
+    </nav>
 
-        <h2>Why it is safe to run</h2>
-        <ul class="safe">
-            <li>Runs entirely inside your own logged-in browser. Your session and cookies never leave your machine.</li>
-            <li>Randomized 20-50 second delay between unfollows, plus a 4-10 minute break every 10.</li>
-            <li>Hard cap of 600 unfollows per day. The counter survives restarts.</li>
-            <li>A protected-handles list it will never unfollow. You edit it in the popup.</li>
-            <li>Unknown popups are dismissed, never confirmed. Only the unfollow confirmation step clicks confirm.</li>
-            <li>Open source and dependency-light. Read every line before you run it.</li>
-        </ul>
+    <header class="hero wrap">
+        <span class="eyebrow reveal">Free &amp; open source</span>
+        <h1 class="reveal">Unfollow,<br><span class="grey">quietly.</span></h1>
+        <p class="lede reveal">Bulk-unfollow on X at a human pace, right inside your own browser. No API keys, no passwords, nothing leaves your machine.</p>
+        <div class="cta reveal">
+            <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
+            <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
+        </div>
+        <p class="subnote reveal">Free forever. Loads unpacked in Chrome in about two minutes.</p>
+    </header>
 
-        <h2>Install (about 2 minutes)</h2>
-        <ol class="steps">
-            <li><a href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download the ZIP</a> and unzip it anywhere.</li>
-            <li>Open <code>chrome://extensions</code> in Chrome.</li>
-            <li>Turn on <strong>Developer mode</strong> (top right).</li>
-            <li>Click <strong>Load unpacked</strong> and select the <code>extension</code> folder from the unzipped download.</li>
-            <li>Log in to X and open <code>x.com/yourhandle/following</code>.</li>
-            <li>Click the x-unfollow icon, set a session size, press <strong>Start</strong>.</li>
-        </ol>
+    <section class="statements wrap">
+        <div class="stmt reveal">
+            <h2>Paced like a human.</h2>
+            <p>20 to 50 seconds between each unfollow, with a longer rest every ten. X never sees a burst.</p>
+        </div>
+        <div class="stmt reveal">
+            <span class="big">600</span>
+            <h2>A ceiling you can trust.</h2>
+            <p>Never more than 600 a day. The count remembers itself, even after you close the tab.</p>
+        </div>
+        <div class="stmt reveal">
+            <h2>Some accounts stay.</h2>
+            <p>Keep a protected list of handles. Those are never touched, no matter how large the run.</p>
+        </div>
+        <div class="stmt reveal">
+            <h2>It never leaves your browser.</h2>
+            <p>Everything runs in your own logged-in session. It cannot post, reply, like, or follow.</p>
+        </div>
+    </section>
 
-        <h2>Prefer a terminal?</h2>
-        <p>The same engine ships as a small Node.js CLI in the repo. See the <a href="https://github.com/OxIsrafil/x-unfollow#setup">README</a>.</p>
+    <section class="steps">
+        <div class="wrap">
+            <h2 class="reveal">Running in three steps.</h2>
+            <div class="grid">
+                <div class="step reveal">
+                    <span class="n">1</span>
+                    <h3>Install it</h3>
+                    <p>Download the ZIP, open <code>chrome://extensions</code>, turn on Developer mode, and load the folder unpacked.</p>
+                </div>
+                <div class="step reveal">
+                    <span class="n">2</span>
+                    <h3>Open X</h3>
+                    <p>Log in and click the x-unfollow icon. Press Start and it jumps to your following page for you.</p>
+                </div>
+                <div class="step reveal">
+                    <span class="n">3</span>
+                    <h3>Let it run</h3>
+                    <p>Watch it work or close the popup and walk away. Stop any time with one click.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <p class="disclaimer">Automating actions on X may violate the X Terms of Service and can lead to rate limits or account restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk. It can only unfollow from your own following list; it cannot post, reply, like, or follow.</p>
+    <section class="closing wrap">
+        <h2 class="reveal">Clean up your following.</h2>
+        <div class="cta reveal">
+            <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
+            <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
+        </div>
+    </section>
 
-        <footer>
-            <a href="https://github.com/OxIsrafil/x-unfollow">GitHub</a> ·
-            <a href="https://github.com/OxIsrafil/x-unfollow/blob/main/LICENSE">MIT License</a>
-        </footer>
-    </div>
+    <footer>
+        <div class="wrap">
+            <p>Automating X may violate its Terms of Service and can lead to rate limits or restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk.</p>
+            <div class="flinks">
+                <a href="https://github.com/OxIsrafil/x-unfollow">GitHub</a>
+                <a href="https://github.com/OxIsrafil/x-unfollow/blob/main/LICENSE">MIT License</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var els = [].slice.call(document.querySelectorAll('.reveal'));
+        if (reduce || !('IntersectionObserver' in window)) {
+            els.forEach(function (el) { el.classList.add('in'); });
+            return;
+        }
+        // Reveal the hero group immediately, staggered.
+        var hero = [].slice.call(document.querySelectorAll('.hero .reveal'));
+        hero.forEach(function (el, i) { el.style.transitionDelay = (i * 90) + 'ms'; });
+        requestAnimationFrame(function () { hero.forEach(function (el) { el.classList.add('in'); }); });
+
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+            });
+        }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+        els.forEach(function (el) { if (hero.indexOf(el) === -1) io.observe(el); });
+    })();
+    </script>
 </body>
 </html>

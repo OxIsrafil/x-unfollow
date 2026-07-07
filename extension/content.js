@@ -304,6 +304,48 @@ async function runSession(sessionMax) {
     }
 }
 
+// Validated session start shared by the popup 'start' message and the
+// auto-start-on-load path. Owns the running flag: every failure path
+// resets it before returning.
+async function beginSession(sessionMaxRaw) {
+    if (running) return { ok: false, error: 'Already running in this tab' };
+    running = true;
+    stopRequested = false;
+    if (!isOnFollowingPage()) {
+        running = false;
+        return { ok: false, error: 'Open your own /following page first (x.com/yourhandle/following)' };
+    }
+    try {
+        const state = await loadDailyState();
+        const remaining = Math.max(0, core.DAILY_MAX - state.count);
+        if (remaining === 0) {
+            running = false;
+            return { ok: false, error: `Daily limit reached (${core.DAILY_MAX}). Try tomorrow.` };
+        }
+        const sessionMax = core.clampSessionMax(sessionMaxRaw, remaining);
+        if (sessionMax === null) {
+            running = false;
+            return { ok: false, error: 'Session max must be a number of 1 or more' };
+        }
+        runSession(sessionMax).catch(() => { });
+        return { ok: true };
+    } catch {
+        running = false;
+        return { ok: false, error: 'Storage error. Reload the tab and try again.' };
+    }
+}
+
+// Reads the logged-in account's handle from the sidebar profile link so
+// the popup can navigate to the right /following page.
+function resolveOwnHandle() {
+    const link = document.querySelector('a[data-testid="AppTabBar_Profile_Link"]');
+    if (link) {
+        const h = core.handleFromHref(link.getAttribute('href'));
+        if (h) return h;
+    }
+    return null;
+}
+
 // --- message protocol ---
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -325,37 +367,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 
     if (msg.type === 'start') {
-        if (running) {
-            sendResponse({ ok: false, error: 'Already running in this tab' });
-            return;
-        }
-        running = true;
-        stopRequested = false;
-        if (!isOnFollowingPage()) {
-            running = false;
-            sendResponse({ ok: false, error: 'Open your own /following page first (x.com/yourhandle/following)' });
-            return;
-        }
-        loadDailyState().then((state) => {
-            const remaining = Math.max(0, core.DAILY_MAX - state.count);
-            if (remaining === 0) {
-                running = false;
-                sendResponse({ ok: false, error: `Daily limit reached (${core.DAILY_MAX}). Try tomorrow.` });
-                return;
-            }
-            const sessionMax = core.clampSessionMax(msg.sessionMax, remaining);
-            if (sessionMax === null) {
-                running = false;
-                sendResponse({ ok: false, error: 'Session max must be a number of 1 or more' });
-                return;
-            }
-            runSession(sessionMax).catch(() => { });
-            sendResponse({ ok: true });
-        }).catch(() => {
-            running = false;
-            sendResponse({ ok: false, error: 'Storage error. Reload the tab and try again.' });
-        });
+        beginSession(msg.sessionMax).then(sendResponse);
         return true;
+    }
+
+    if (msg.type === 'resolveHandle') {
+        sendResponse({ handle: resolveOwnHandle() });
+        return;
     }
 
     if (msg.type === 'stop') {
@@ -364,3 +382,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return;
     }
 });
+
+// Auto-start after a popup-triggered navigation. Consumes the autoStart
+// intent exactly once; it must be fresh (under 30s) and the page must be
+// the same /following page the popup targeted, otherwise it is dropped.
+(async () => {
+    try {
+        const { autoStart } = await chrome.storage.local.get('autoStart');
+        if (!autoStart) return;
+        await chrome.storage.local.remove('autoStart');
+        const fresh = typeof autoStart.ts === 'number' && (Date.now() - autoStart.ts) < 30000;
+        const here = (location.pathname.split('/')[1] || '').toLowerCase();
+        if (fresh && isOnFollowingPage() && typeof autoStart.handle === 'string' && autoStart.handle.toLowerCase() === here) {
+            beginSession(autoStart.sessionMax);
+        }
+    } catch { }
+})();

@@ -18,8 +18,8 @@ function renderStatus(s) {
     el('startBtn').hidden = runningHere;
     el('stopBtn').hidden = !runningHere;
     if (!runningHere && !s.onFollowingPage) {
-        el('startBtn').disabled = true;
-        el('statusLine').textContent = 'Open your own /following page (x.com/yourhandle/following), then reopen this popup.';
+        el('startBtn').disabled = false;
+        el('statusLine').textContent = 'Press Start to jump to your following page and begin.';
     } else if (!runningHere) {
         el('startBtn').disabled = false;
     }
@@ -48,14 +48,29 @@ async function init() {
 
 el('startBtn').addEventListener('click', async () => {
     el('startBtn').disabled = true;
+    const sessionMax = el('sessionMax').value.trim();
     try {
-        const res = await send({ type: 'start', sessionMax: el('sessionMax').value.trim() });
-        if (!res.ok) {
-            el('statusLine').textContent = res.error;
-            el('startBtn').disabled = false;
+        const status = await send({ type: 'status' });
+        if (status && status.onFollowingPage) {
+            const res = await send({ type: 'start', sessionMax });
+            if (!res.ok) {
+                el('statusLine').textContent = res.error;
+                el('startBtn').disabled = false;
+            }
+            return;
         }
+        const { handle } = await send({ type: 'resolveHandle' });
+        if (!handle) {
+            el('statusLine').textContent = 'Could not detect your handle. Open x.com/yourhandle/following and press Start.';
+            el('startBtn').disabled = false;
+            return;
+        }
+        await chrome.storage.local.set({ autoStart: { ts: Date.now(), handle, sessionMax } });
+        el('statusLine').textContent = 'Opening your following page...';
+        await chrome.tabs.update(activeTabId, { url: `https://x.com/${handle}/following` });
+        window.close();
     } catch {
-        el('statusLine').textContent = 'Could not reach the page. Reload the tab and try again.';
+        el('statusLine').textContent = 'Could not reach the page. If you are on x.com, reload the tab, then try again. Otherwise open x.com first.';
         el('startBtn').disabled = false;
     }
 });
