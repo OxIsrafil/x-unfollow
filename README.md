@@ -27,7 +27,7 @@ Prefer clicking over terminals? The same engine ships as a Chrome extension in [
 5. If x.com was already open, reload that tab once so the extension attaches
 6. Log in to X, open `x.com/yourhandle/following`, click the x-unfollow icon, press **Start**
 
-Same rules as the CLI: 20-50 second pacing, hard cap of 600 per day, protected-handles list (edit it in the popup). Keep the tab open while it runs; closing the popup is fine. Chrome slows timers in background tabs, so pacing gets slower (never faster) if you switch away.
+Same rules as the CLI: 20-50 second pacing, hard cap of 600 per day, and a protected-handles list. To protect someone, just click the **Protect** button that appears on each account on your following page (or type handles in the popup) - protected accounts are never unfollowed. Keep the tab open while it runs; closing the popup is fine. Chrome slows timers in background tabs, so pacing gets slower (never faster) if you switch away.
 
 ## How it stays safe
 
