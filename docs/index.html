@@ -202,7 +202,7 @@
         footer { border-top: 1px solid var(--line); padding: 42px 0; }
         footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
         footer p { margin: 0; color: var(--faint); font-size: 0.9rem; max-width: 58ch; line-height: 1.5; }
-        footer .flinks { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        footer .flinks { display: flex; gap: 20px; }
         footer .flinks a { color: var(--muted); font-size: 0.9rem; }
         footer .flinks a:hover { color: var(--fg); }
         footer .credit { color: var(--faint); font-size: 0.9rem; }
@@ -230,7 +230,7 @@
             .reveal, .word > span, .mh > span, .hero .cta, .hero .eyebrow, .hero .lede { opacity: 1 !important; transform: none !important; transition: none !important; }
             .blob { animation: none !important; }
             .row { transition: none !important; }
-            .btn, .step, .bmc, .chev, .brand svg, nav { transition: none !important; }
+            .btn, .step, .bmc, .chev { transition: none !important; }
             .qa[open] .ans { animation: none !important; }
         }
     </style>
@@ -247,7 +247,7 @@
             <div class="navlinks">
                 <a class="navlink gh" href="https://github.com/OxIsrafil/x-unfollow" aria-label="View on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg><span>GitHub</span></a>
                 <a class="navlink support-link" href="#support">Support</a>
-                <a class="navcta" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
+                <a class="navcta" href="https://download-directory.github.io/?url=https://github.com/OxIsrafil/x-unfollow/tree/main/extension" target="_blank" rel="noopener">Download</a>
             </div>
         </div>
     </nav>
@@ -258,7 +258,7 @@
             <h1><span class="word"><span>Unfollow</span></span> <span class="word small grey"><span>quietly</span></span></h1>
             <p class="lede">Bulk-unfollow on X at a human pace, right inside your own browser. No API keys, no passwords, nothing leaves your machine.</p>
             <div class="cta">
-                <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
+                <a class="btn primary" href="https://download-directory.github.io/?url=https://github.com/OxIsrafil/x-unfollow/tree/main/extension" target="_blank" rel="noopener">Download</a>
                 <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
             </div>
             <p class="subnote">Loads unpacked in Chrome in about two minutes.</p>
@@ -370,7 +370,7 @@
     <section class="closing wrap">
         <h2><span class="mh"><span>Clean up your following.</span></span></h2>
         <div class="cta reveal">
-            <a class="btn primary" href="https://github.com/OxIsrafil/x-unfollow/archive/refs/heads/main.zip">Download</a>
+            <a class="btn primary" href="https://download-directory.github.io/?url=https://github.com/OxIsrafil/x-unfollow/tree/main/extension" target="_blank" rel="noopener">Download</a>
             <a class="btn ghost" href="https://github.com/OxIsrafil/x-unfollow">View on GitHub <span class="arw">&rarr;</span></a>
         </div>
     </section>
@@ -390,7 +390,7 @@
     (function () {
         var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // scroll progress + floating nav state
+        // scroll progress
         var prog = document.getElementById('progress');
         var navEl = document.querySelector('nav');
         function onScroll() {
