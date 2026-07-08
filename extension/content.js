@@ -398,3 +398,142 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
     } catch { }
 })();
+
+// --- in-page one-click protect (whitelist) buttons ---
+// Adds a small "Protect" pill to each account on your /following page so you
+// can whitelist people with one click instead of typing handles. It only
+// edits the same protectList in chrome.storage.local that the popup and the
+// unfollow engine already use - nothing leaves the browser.
+
+let protectedCache = new Set();
+
+function ensureProtectStyles() {
+    if (document.getElementById('xuf-style')) return;
+    const style = document.createElement('style');
+    style.id = 'xuf-style';
+    style.textContent =
+        '.xuf-btn{display:inline-flex;align-items:center;gap:5px;margin-right:8px;' +
+        'padding:0 14px;height:32px;border-radius:999px;border:1px solid rgb(207,217,222);' +
+        'background:transparent;color:rgb(15,20,25);font-weight:700;font-size:13px;' +
+        'font-family:inherit;cursor:pointer;line-height:1;white-space:nowrap}' +
+        '.xuf-btn svg{width:16px;height:16px}' +
+        '.xuf-btn:hover{background:rgba(15,20,25,0.06)}' +
+        '.xuf-btn.on{background:rgb(29,155,240);border-color:rgb(29,155,240);color:#fff}' +
+        '.xuf-btn.on:hover{background:rgb(26,140,216)}' +
+        '@media (prefers-color-scheme:dark){' +
+        '.xuf-btn{border-color:rgb(83,100,113);color:rgb(231,233,234)}' +
+        '.xuf-btn:hover{background:rgba(239,243,244,0.1)}}';
+    (document.head || document.documentElement).appendChild(style);
+}
+
+const XUF_SHIELD =
+    '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+    '<path d="M12 2l7 3v6c0 4.6-3 8.4-7 9.6C8 19.4 5 15.6 5 11V5l7-3z" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const XUF_SHIELD_ON =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+    '<path d="M12 2l7 3v6c0 4.6-3 8.4-7 9.6C8 19.4 5 15.6 5 11V5l7-3z"/></svg>';
+
+function setProtectBtn(btn, on) {
+    btn.classList.toggle('on', on);
+    btn.innerHTML = (on ? XUF_SHIELD_ON : XUF_SHIELD) + '<span>' + (on ? 'Protected' : 'Protect') + '</span>';
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on
+        ? 'Protected - x-unfollow will never unfollow this account. Click to remove.'
+        : 'Protect - x-unfollow will never unfollow this account.';
+}
+
+async function toggleProtectHandle(handle) {
+    const hNorm = handle.toLowerCase();
+    const { protectList } = await chrome.storage.local.get('protectList');
+    const set = core.parseProtectList(protectList);
+    if (set.has(hNorm)) set.delete(hNorm); else set.add(hNorm);
+    await chrome.storage.local.set({ protectList: [...set].join('\n') });
+    protectedCache = set;
+    return set.has(hNorm);
+}
+
+function decorateFollowingRows() {
+    if (!isOnFollowingPage()) return;
+    ensureProtectStyles();
+    const myHandleNorm = (location.pathname.split('/')[1] || '').toLowerCase();
+
+    for (const cell of document.querySelectorAll('[data-testid="UserCell"]')) {
+        let handle = null;
+        for (const a of cell.querySelectorAll('a[href^="/"]')) {
+            handle = core.handleFromHref(a.getAttribute('href'));
+            if (handle) break;
+        }
+        const hNorm = handle ? handle.toLowerCase() : null;
+        const existing = cell.querySelector('.xuf-btn');
+
+        // Already decorated for this same account: just keep its state fresh.
+        if (existing && cell.dataset.xufFor === hNorm && hNorm) {
+            setProtectBtn(existing, protectedCache.has(hNorm));
+            continue;
+        }
+
+        // Fresh or recycled node: drop any stale button, then re-decorate.
+        if (existing) existing.remove();
+        cell.dataset.xufFor = '';
+        if (!hNorm || hNorm === myHandleNorm) continue;
+
+        const followBtn = [...cell.querySelectorAll('[role="button"],button')].find((b) =>
+            core.isFollowingLabel(b.innerText || b.getAttribute('aria-label') || '')
+        );
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'xuf-btn';
+        setProtectBtn(btn, protectedCache.has(hNorm));
+        const rowHandle = handle;
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (btn.disabled) return;
+            btn.disabled = true;
+            try {
+                setProtectBtn(btn, await toggleProtectHandle(rowHandle));
+            } catch {
+                // leave the button as-is on failure
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        if (followBtn && followBtn.parentElement) {
+            followBtn.parentElement.insertBefore(btn, followBtn);
+        } else {
+            cell.appendChild(btn);
+        }
+        cell.dataset.xufFor = hNorm;
+    }
+}
+
+function refreshProtectButtons() {
+    for (const btn of document.querySelectorAll('.xuf-btn')) {
+        const cell = btn.closest('[data-testid="UserCell"]');
+        const h = cell && cell.dataset.xufFor;
+        if (h) setProtectBtn(btn, protectedCache.has(h));
+    }
+}
+
+(async function initProtectButtons() {
+    try { protectedCache = await loadProtectedSet(); } catch { }
+    decorateFollowingRows();
+
+    let deb = null;
+    new MutationObserver(() => {
+        clearTimeout(deb);
+        deb = setTimeout(decorateFollowingRows, 250);
+    }).observe(document.body, { childList: true, subtree: true });
+
+    try {
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area === 'local' && changes.protectList) {
+                protectedCache = core.parseProtectList(changes.protectList.newValue);
+                refreshProtectButtons();
+            }
+        });
+    } catch { }
+})();
