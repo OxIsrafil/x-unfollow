@@ -77,6 +77,10 @@ One handle per line, with or without @.
 - Automating actions on X may violate the [X Terms of Service](https://x.com/en/tos) and can lead to rate limits or account restrictions. This tool is intentionally slow and conservative, but no guarantees are made. Use at your own risk.
 - This tool only unfollows from your own following list. It cannot post, reply, like, or follow.
 
+## Privacy
+
+x-unfollow collects nothing and has no server - everything runs in your own browser or terminal. Full details in [PRIVACY.md](PRIVACY.md).
+
 ## Author
 
 Built by [@israfill](https://x.com/israfill). If x-unfollow saved you an afternoon, a follow on X means a lot and helps more people find it.
