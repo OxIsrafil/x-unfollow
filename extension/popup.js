@@ -31,11 +31,32 @@ function setToday(n) {
     })(start);
 }
 
+// Rough time-remaining estimate for a run: ~35s between unfollows plus a long
+// break (~7 min) after every 10. Deliberately approximate, so it is labelled "~".
+function etaMinutes(remaining) {
+    const secs = remaining * 35 + Math.floor(remaining / 10) * 420;
+    return Math.max(1, Math.round(secs / 60)) + ' min';
+}
+
+// Brief success toast when a session finishes. prevState lets us fire it once,
+// on the running -> idle transition, rather than on every idle status.
+let prevState = null;
+let successTimer = null;
+function showSuccess(n) {
+    const box = el('success'), txt = el('successText');
+    if (!box || !txt) return;
+    txt.textContent = `Unfollowed ${n} this session`;
+    box.hidden = false;
+    clearTimeout(successTimer);
+    successTimer = setTimeout(() => { box.hidden = true; }, 4200);
+}
+
 function renderStatus(s) {
     setToday(s.todayCount);
     el('statusLine').textContent = s.message;
     const runningHere = s.state === 'running';
-    el('startBtn').hidden = runningHere;
+    const confirming = el('confirmBar') && !el('confirmBar').hidden;
+    el('startBtn').hidden = runningHere || confirming;
     el('stopBtn').hidden = !runningHere;
     el('controls').classList.toggle('running', runningHere);
     const fill = el('sessionProgressFill');
@@ -43,6 +64,17 @@ function renderStatus(s) {
         const pct = runningHere && s.sessionMax ? Math.min(100, Math.round((s.sessionCount / s.sessionMax) * 100)) : 0;
         fill.style.width = pct + '%';
     }
+    const runCountEl = el('runCount'), etaEl = el('eta');
+    if (runningHere && runCountEl && etaEl) {
+        const total = s.sessionMax || 0, done = s.sessionCount || 0;
+        runCountEl.textContent = total ? `${done} of ${total}` : `${done}`;
+        const remaining = Math.max(0, total - done);
+        etaEl.textContent = remaining ? `~${etaMinutes(remaining)} left` : 'almost done';
+    }
+    if (prevState === 'running' && !runningHere && (s.sessionCount || 0) > 0) {
+        showSuccess(s.sessionCount);
+    }
+    prevState = s.state;
     if (!runningHere && !s.onFollowingPage) {
         el('startBtn').disabled = false;
         el('statusLine').textContent = 'Press Start to jump to your following page and begin.';
@@ -73,7 +105,7 @@ async function init() {
     if (sessionMax) el('sessionMax').value = sessionMax;
 }
 
-el('startBtn').addEventListener('click', async () => {
+async function beginStart() {
     el('startBtn').disabled = true;
     const sessionMax = el('sessionMax').value.trim();
     try {
@@ -82,6 +114,7 @@ el('startBtn').addEventListener('click', async () => {
             const res = await send({ type: 'start', sessionMax });
             if (!res.ok) {
                 el('statusLine').textContent = res.error;
+                el('startBtn').hidden = false;
                 el('startBtn').disabled = false;
             }
             return;
@@ -89,6 +122,7 @@ el('startBtn').addEventListener('click', async () => {
         const { handle } = await send({ type: 'resolveHandle' });
         if (!handle) {
             el('statusLine').textContent = 'Could not detect your handle. Open x.com/yourhandle/following and press Start.';
+            el('startBtn').hidden = false;
             el('startBtn').disabled = false;
             return;
         }
@@ -98,8 +132,32 @@ el('startBtn').addEventListener('click', async () => {
         window.close();
     } catch {
         el('statusLine').textContent = 'Could not reach the page. If you are on x.com, reload the tab, then try again. Otherwise open x.com first.';
+        el('startBtn').hidden = false;
         el('startBtn').disabled = false;
     }
+}
+
+// A big run (over 100 at once) gets one inline confirm before it begins.
+el('startBtn').addEventListener('click', () => {
+    const n = parseInt(el('sessionMax').value.trim(), 10);
+    const confirmBar = el('confirmBar');
+    if (confirmBar && Number.isFinite(n) && n > 100) {
+        el('confirmText').textContent = `Unfollow up to ${n} accounts this session? That is a lot to do at once.`;
+        el('startBtn').hidden = true;
+        confirmBar.hidden = false;
+        return;
+    }
+    beginStart();
+});
+
+const confirmYes = el('confirmYes'), confirmNo = el('confirmNo');
+if (confirmYes) confirmYes.addEventListener('click', () => {
+    el('confirmBar').hidden = true;
+    beginStart();
+});
+if (confirmNo) confirmNo.addEventListener('click', () => {
+    el('confirmBar').hidden = true;
+    el('startBtn').hidden = false;
 });
 
 el('stopBtn').addEventListener('click', async () => {
