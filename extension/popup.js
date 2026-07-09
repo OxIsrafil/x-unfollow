@@ -11,12 +11,38 @@ function showNotice(text) {
     el('controls').hidden = true;
 }
 
+// Count the "Today" number up to its new value, unless reduced-motion is set.
+let lastToday = null;
+function setToday(n) {
+    const t = el('today');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (lastToday === null || reduce || n === lastToday) {
+        t.textContent = `Today: ${n}/600`;
+        lastToday = n;
+        return;
+    }
+    const from = lastToday, start = performance.now(), dur = 500;
+    lastToday = n;
+    (function tick(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        t.textContent = `Today: ${Math.round(from + (n - from) * eased)}/600`;
+        if (p < 1) requestAnimationFrame(tick);
+    })(start);
+}
+
 function renderStatus(s) {
-    el('today').textContent = `Today: ${s.todayCount}/600`;
+    setToday(s.todayCount);
     el('statusLine').textContent = s.message;
     const runningHere = s.state === 'running';
     el('startBtn').hidden = runningHere;
     el('stopBtn').hidden = !runningHere;
+    el('controls').classList.toggle('running', runningHere);
+    const fill = el('sessionProgressFill');
+    if (fill) {
+        const pct = runningHere && s.sessionMax ? Math.min(100, Math.round((s.sessionCount / s.sessionMax) * 100)) : 0;
+        fill.style.width = pct + '%';
+    }
     if (!runningHere && !s.onFollowingPage) {
         el('startBtn').disabled = false;
         el('statusLine').textContent = 'Press Start to jump to your following page and begin.';
@@ -41,9 +67,10 @@ async function init() {
     }
     if (status) renderStatus(status);
 
-    const { protectList } = await chrome.storage.local.get('protectList');
+    const { protectList, sessionMax } = await chrome.storage.local.get(['protectList', 'sessionMax']);
     el('protectList').value = protectList || '';
     el('protectCount').textContent = XUnfollowCore.parseProtectList(protectList || '').size;
+    if (sessionMax) el('sessionMax').value = sessionMax;
 }
 
 el('startBtn').addEventListener('click', async () => {
@@ -96,6 +123,11 @@ el('protectList').addEventListener('input', () => {
         await chrome.storage.local.set({ protectList: el('protectList').value });
         el('protectSaved').hidden = false;
     }, 400);
+});
+
+// Remember the session-max value across popup open/close.
+el('sessionMax').addEventListener('input', () => {
+    chrome.storage.local.set({ sessionMax: el('sessionMax').value });
 });
 
 chrome.runtime.onMessage.addListener((msg, sender) => {

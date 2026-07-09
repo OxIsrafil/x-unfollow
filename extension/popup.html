@@ -2,28 +2,21 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+    <div class="aurora" aria-hidden="true"><span class="blob a"></span><span class="blob b"></span></div>
+
     <header class="topbar">
         <span class="brand">
             <svg class="logo" viewBox="0 0 128 128" aria-hidden="true">
-                <defs>
-                    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stop-color="#1a1a1a"/>
-                        <stop offset="1" stop-color="#000000"/>
-                    </linearGradient>
-                </defs>
+                <defs><linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a1a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs>
                 <rect width="128" height="128" rx="29" fill="url(#tile)"/>
-                <g stroke="#ffffff" stroke-width="14" stroke-linecap="round">
-                    <line x1="41" y1="41" x2="82" y2="82"/>
-                    <line x1="82" y1="41" x2="41" y2="82"/>
-                </g>
-                <circle cx="98" cy="98" r="23" fill="#000000"/>
-                <circle cx="98" cy="98" r="17" fill="#0A84FF"/>
-                <rect x="89" y="95" width="18" height="6" rx="3" fill="#ffffff"/>
+                <g stroke="#ffffff" stroke-width="14" stroke-linecap="round"><line x1="41" y1="41" x2="82" y2="82"/><line x1="82" y1="41" x2="41" y2="82"/></g>
+                <circle cx="98" cy="98" r="23" fill="#000000"/><circle cx="98" cy="98" r="17" fill="#0A84FF"/><rect x="89" y="95" width="18" height="6" rx="3" fill="#ffffff"/>
             </svg>
-            <span class="brandname">x<span class="d">-</span>unfollow</span>
+            <span class="brandname"><span class="brandname-reveal">x<span class="d">-</span>unfollow</span></span>
         </span>
         <span id="today" class="today">Today: -/600</span>
     </header>
@@ -37,7 +30,11 @@
         </div>
         <button id="startBtn" class="btn primary">Start</button>
         <button id="stopBtn" class="btn stop" hidden>Stop</button>
-        <p id="statusLine" class="status">Idle</p>
+        <div id="sessionProgress"><div id="sessionProgressFill"></div></div>
+        <div class="statusbar" aria-live="polite">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span id="statusLine" class="status">Idle</span>
+        </div>
     </main>
 
     <details id="protect" class="protect">

@@ -2,6 +2,12 @@
 
 All notable changes to x-unfollow are documented here. This project follows [semantic versioning](https://semver.org).
 
+## 1.2.0 - 2026-07-09
+
+- Redesigned popup with a premium, animated feel: an on-brand aurora accent, a staggered entrance, and a live progress bar with a pulse while a run is going
+- The session size you enter is now remembered when you close and reopen the popup
+- Fixed the Stop button being visible while idle
+
 ## 1.1.0 - 2026-07-09
 
 - One-click **Protect** buttons on your following page - whitelist anyone without typing handles
