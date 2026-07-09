@@ -347,3 +347,122 @@ footer {
     #sessionProgressFill::after { display: none; }
     .btn.primary:hover, .btn:active { transform: none; }
 }
+
+/* ============================================================
+   additions: run meta, large-run confirm, success toast
+   ============================================================ */
+
+/* ---------- run meta / eta (visible only mid-run, mirrors #sessionProgress) ---------- */
+
+.run-meta {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    height: 0; margin: 0 2px; opacity: 0; overflow: hidden;
+    font-size: 11.5px; font-weight: 500; line-height: 18px;
+    font-variant-numeric: tabular-nums;
+    transition: height 0.35s cubic-bezier(0.22,1,0.36,1), margin 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease;
+}
+#controls.running .run-meta { height: 18px; margin: 8px 2px 0; opacity: 1; }
+#runCount { color: var(--muted); }
+#eta { color: var(--faint); white-space: nowrap; }
+
+/* ---------- large-run confirm callout ---------- */
+
+.confirm-bar {
+    margin: 14px 0 0;
+    padding: 13px 14px 14px;
+    border-radius: 14px;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-line);
+}
+#confirmBar:not([hidden]) { animation: rise 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+
+.confirm-text {
+    margin: 0 0 11px;
+    color: var(--warn-fg);
+    font-size: 12.5px; font-weight: 500; line-height: 1.5;
+}
+.confirm-actions { display: flex; gap: 8px; }
+
+.cbtn {
+    flex: 1 1 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; padding: 0 14px;
+    border: 1px solid transparent; border-radius: 999px;
+    font-size: 13.5px; font-weight: 600; font-family: inherit;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.28s cubic-bezier(0.16,1,0.3,1),
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+.cbtn:active { transform: scale(0.98); }
+.cbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.cbtn-ghost {
+    color: var(--muted);
+    background: transparent;
+    border-color: var(--line);
+}
+.cbtn-ghost:hover {
+    color: var(--fg);
+    background: var(--hover-wash);
+    border-color: color-mix(in srgb, var(--muted) 40%, var(--line));
+}
+
+.cbtn-danger {
+    color: #fff;
+    background: var(--stop);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10), 0 4px 14px color-mix(in srgb, var(--stop) 22%, transparent);
+}
+.cbtn-danger:hover {
+    background: color-mix(in srgb, var(--stop) 88%, #000);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.10), 0 6px 18px color-mix(in srgb, var(--stop) 28%, transparent);
+}
+.cbtn-danger:focus-visible { outline-color: var(--stop); }
+@media (prefers-color-scheme: dark) {
+    /* darker fill keeps white label at AA on the brighter dark-mode red */
+    .cbtn-danger { background: color-mix(in srgb, var(--stop) 78%, #000); }
+    .cbtn-danger:hover { background: color-mix(in srgb, var(--stop) 70%, #000); }
+}
+
+/* ---------- success toast ---------- */
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes check-draw {
+    from { stroke-dashoffset: 21; }
+    to   { stroke-dashoffset: 0; }
+}
+
+#success {
+    position: absolute; left: 18px; right: 18px; bottom: 14px; z-index: 5;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    min-height: 40px; padding: 9px 16px;
+    border-radius: 999px;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--ok) 9%, var(--bg));
+    border: 1px solid color-mix(in srgb, var(--ok) 35%, transparent);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.14), 0 2px 8px color-mix(in srgb, var(--ok) 18%, transparent);
+    font-size: 13px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+}
+#success:not([hidden]) { animation: toast-in 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+#success .check { width: 17px; height: 17px; flex: none; color: var(--ok); }
+#success:not([hidden]) .check path {
+    stroke-dasharray: 21; /* path length ~19.8; offset animates the draw-on */
+    animation: check-draw 0.5s cubic-bezier(0.16,1,0.3,1) 0.18s both;
+}
+#successText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- reduced motion (additions) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .cbtn:active { transform: none; }
+}

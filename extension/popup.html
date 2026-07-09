@@ -31,9 +31,20 @@
         <button id="startBtn" class="btn primary">Start</button>
         <button id="stopBtn" class="btn stop" hidden>Stop</button>
         <div id="sessionProgress"><div id="sessionProgressFill"></div></div>
+        <div id="runMeta" class="run-meta">
+            <span id="runCount"></span>
+            <span id="eta"></span>
+        </div>
         <div class="statusbar" aria-live="polite">
             <span class="live-dot" aria-hidden="true"></span>
             <span id="statusLine" class="status">Idle</span>
+        </div>
+        <div id="confirmBar" class="confirm-bar" hidden>
+            <p id="confirmText" class="confirm-text"></p>
+            <div class="confirm-actions">
+                <button id="confirmNo" type="button" class="cbtn cbtn-ghost">Cancel</button>
+                <button id="confirmYes" type="button" class="cbtn cbtn-danger">Unfollow</button>
+            </div>
         </div>
     </main>
 
@@ -50,6 +61,11 @@
     </details>
 
     <footer>20-50s between each &middot; hard cap 600/day</footer>
+
+    <div id="success" class="toast" hidden role="status">
+        <svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="successText"></span>
+    </div>
 
     <script src="core.js"></script>
     <script src="popup.js"></script>
